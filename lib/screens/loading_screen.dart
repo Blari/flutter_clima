@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clima/services/location.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_clima/utilities/constants.dart';
-import 'dart:convert';
+import 'package:flutter_clima/services/networking.dart';
+import 'package:flutter_clima/utilities/constants.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -10,38 +10,44 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  double latitude;
+  double longitude;
+
+  var temperature;
+  String city;
+
   @override
   void initState() {
+    getLocationData();
     super.initState();
   }
 
-  void getLocation() async {
+  void getLocationData() async {
     Location location = new Location();
     await location.getCurrentLocation();
-  }
 
-  void getData() async {
-    http.Response res = await http.get(
-        'http://api.openweathermap.org/data/2.5/forecast?id=524901&appid=${api}');
+    latitude = location.latitude;
+    longitude = location.longitude;
 
-    if (res.statusCode == 200) {
-      String data = res.body;
-      var temperature = jsonDecode(data)['list'][0]['main']['temp'];
-    } else {
-      print(res.statusCode);
-    }
+    NetworkHelper networkHelper = NetworkHelper(
+        'http://api.openweathermap.org/data/2.5/weather?&lat=$latitude&lon=$longitude&appid=$api&lang=ru&units=metric');
+
+    var weatherData = await networkHelper.getData();
   }
 
   @override
   Widget build(BuildContext context) {
-    getData();
     return Scaffold(
       body: Container(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('code'),
+            Text(
+              'Погода в ${city}e: ${temperature.toString()}°C',
+              style: kMessageTextStyle,
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
