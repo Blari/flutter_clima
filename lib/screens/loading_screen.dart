@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_clima/services/location.dart';
 import 'package:flutter_clima/utilities/constants.dart';
 import 'package:flutter_clima/services/networking.dart';
-import 'package:flutter_clima/utilities/constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import 'location_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -30,25 +32,19 @@ class _LoadingScreenState extends State<LoadingScreen> {
     longitude = location.longitude;
 
     NetworkHelper networkHelper = NetworkHelper(
-        'http://api.openweathermap.org/data/2.5/weather?&lat=$latitude&lon=$longitude&appid=$api&lang=ru&units=metric');
-
+        'http://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$api&lang=ru&units=metric');
     var weatherData = await networkHelper.getData();
+
+    Navigator.pushNamed(context, '/location_screen');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Погода в ${city}e: ${temperature.toString()}°C',
-              style: kMessageTextStyle,
-              textAlign: TextAlign.center,
-            ),
-          ],
+      body: Center(
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 100.0,
         ),
       ),
     );
