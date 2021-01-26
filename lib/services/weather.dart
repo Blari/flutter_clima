@@ -1,4 +1,19 @@
+import 'package:flutter_clima/services/location.dart';
+import 'package:flutter_clima/services/networking.dart';
+import 'package:flutter_clima/utilities/constants.dart';
+
 class WeatherModel {
+  Future<dynamic> getLocationWeather() async {
+    Location location = new Location();
+    await location.getCurrentLocation();
+
+    NetworkHelper networkHelper = NetworkHelper(
+        '$openWeatherMapURL?lat=${location.latitude}&lon=${location.longitude}&appid=$api&lang=ru&units=metric');
+    var weatherData = await networkHelper.getData();
+
+    return weatherData;
+  }
+
   String getWeatherIcon(int condition) {
     if (condition < 300) {
       return '🌩';
@@ -21,13 +36,13 @@ class WeatherModel {
 
   String getMessage(int temp) {
     if (temp > 25) {
-      return 'It\'s 🍦 time';
+      return 'Врямя для 🍦';
     } else if (temp > 20) {
-      return 'Time for shorts and 👕';
+      return 'Время для шорт и 👕';
     } else if (temp < 10) {
-      return 'You\'ll need 🧣 and 🧤';
+      return 'Тебе понадобятся 🧣 и 🧤';
     } else {
-      return 'Bring a 🧥 just in case';
+      return 'Захвати 🧥 на всякий случай';
     }
   }
 }
